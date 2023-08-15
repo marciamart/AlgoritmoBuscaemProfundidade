@@ -2,6 +2,7 @@
 arquivo = input("insira o nome do arquivo:")
 
 arqGrafo = open(arquivo, 'r')
+
 conteudoArq = []
 dados_importantes =[]
 
@@ -11,51 +12,42 @@ dados_importantes = arqGrafo.readline().split()
 numVertices = int(dados_importantes[0])
 quantArestas = int(dados_importantes[1])
 
-if len(dados_importantes) > 2:
-    direcionamento = "direcionado"
-else: 
-    direcionamento = "não direcionado"
-
-# print("\nvertices:",numVertices,"\nArestas:", quantArestas,'\nDirecionamento:',direcionamento,'\n')
-
 # lendo o arquivo
 lista = arqGrafo.readlines()
 
 # criando lista provisoria
-listadj = [[] for _ in range(numVertices)] 
+conteudoArq = [[] for _ in range(numVertices)] 
 
-# colocando os valores na lista por linha lida de acordo com a ordem alfabetica
+# colocando os valores na lista por linha lida de acordo com a ordem numerica
 for i in range(len(lista)):
     linha = lista[i].split()
-    #ordem alfabetica é abstrata pois ele so esta no suposto lugar  que ele deveria
-    listadj[ord(linha[0])-97].append(linha[1])     
+    #ordem numerica é abstrata pois ele so esta no suposto lugar  que ele deveria
+    conteudoArq[int(linha[0])-1].append(linha[1])     
 
 #colocando em ordem 
-lista_adj = [sorted(li) for li in listadj]
+lista_adj = [sorted(li) for li in conteudoArq]
 arqGrafo.close()
 
 #fazendo uma lista de ondem para execução com a maior grau de saida 
-maior_lista = None
+maior_lista = 0
 tam_maior = 0
-for lista in lista_adj:
-    tam_lista = len(lista)
+for i in lista_adj:
+    tam_lista = len(i)
     if tam_lista>tam_maior:
         tam_maior = tam_lista
-        maior_lista = lista
+        maior_lista = i
+
 x = 0
 for i in lista_adj:
-    if maior_lista == i:
-        break
-    x = x + 1
+   if maior_lista == i:
+       break
+   x = x + 1
 
-lista_V = [numVertices]
-for i in range(numVertices):
-    if lista_V[0] != x:
-        lista_V.append(x)
-    else:
-        if i == x:
-            continue
-        lista_V.append(i)
+lista_V = [x]
+for i in range(numVertices-1):
+    if i == x:
+        continue
+    lista_V.append(i)
 
 #variaveis e listas utilizadas no dfs
 cor = ['BRANCO']*numVertices
@@ -70,28 +62,28 @@ def DFS_VISIT(vert_vizinhos, u):
     mark += 1
     d[u] = mark
     for j in vert_vizinhos:
-        i = ord(j)-97
+        i = int(j)-1
         if cor[i] == 'BRANCO':
             DFS_VISIT(lista_adj[i],i)
-            print(f"{chr(u+97)} {chr(i+97)}: árvore")
+            print(f"{u+1} {i+1}: árvore")
         elif cor[i] == 'CINZA':
-            print(f"{chr(u+97)} {chr(i+97)}: retorno")
+            print(f"{u+1} {i+1}: retorno")
         elif cor[i] == 'PRETO': 
             if d[u] < d[i]:
-                print(f"{chr(u+97)} {chr(i+97)}: avanço")
+                print(f"{u+1} {i+1}: avanço")
             else:
-                print(f"{chr(u+97)} {chr(i+97)}: cruzamento")
+                print(f"{u+1} {i+1}: cruzamento")
     cor[u] = 'PRETO'
     mark += 1
     f[u] = mark
     
 def DFS():
-    for i in lista_V:
-        v = lista_V[i]
-        if cor[v] == 'BRANCO':
-            DFS_VISIT(lista_adj[v], v)
+    if quantArestas != 0:
+        for v in lista_V:
+            if cor[v] == 'BRANCO':
+                DFS_VISIT(lista_adj[v], v)
            
 DFS()
-# print('\nLista Adjacente:\n', lista_adj)
-print("\nvetor d:",d)
+
+print("vetor d:",d)
 print("vetor f:",f)
